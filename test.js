@@ -1,6 +1,17 @@
-try {
-  const crypto = require("node:crypto");
-  console.log("Crypto is supported!");
-} catch (err) {
-  console.error("Crypto support is disabled or missing.");
-}
+// suspend behaviour test
+let r;
+const a = async () => {
+  await new Promise((resolve) => {
+    r = resolve;
+    console.log("resolve");
+  });
+};
+
+const b = async () => {
+  await a();
+  console.log("b done");
+};
+
+b();
+console.log("wait");
+r();

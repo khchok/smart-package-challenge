@@ -48,4 +48,17 @@ describe("PackageStorageService", () => {
     const result = await service.store(LockerSize.SMALL, "Jane");
     expect(result.lockerId).toBe("L2");
   });
+
+  it("assigns different lockers to two concurrent store requests", async () => {
+    lockerRepo.save(new Locker("L1", LockerSize.SMALL));
+    lockerRepo.save(new Locker("L2", LockerSize.SMALL));
+
+    const [r1, r2] = await Promise.all([
+      service.store(LockerSize.SMALL, "Jane A"),
+      service.store(LockerSize.SMALL, "Doe B"),
+      service.store(LockerSize.SMALL, "Bob C"),
+    ]);
+
+    expect(r1.lockerId).not.toBe(r2.lockerId);
+  });
 });
