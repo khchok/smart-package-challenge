@@ -22,7 +22,7 @@ describe("PackageRetrievalService", () => {
   it("retrieves a package and returns the package id", async () => {
     lockerRepo.save(new Locker("L1", LockerSize.MEDIUM));
     const stored = await storageService.store(LockerSize.SMALL, "Jane");
-    const result = retrievalService.retrieve(
+    const result = retrievalService.confirmRetrieve(
       stored.lockerId,
       stored.pickupCode,
     );
@@ -33,14 +33,14 @@ describe("PackageRetrievalService", () => {
     const locker = new Locker("L1", LockerSize.MEDIUM);
     lockerRepo.save(locker);
     const stored = await storageService.store(LockerSize.SMALL, "Jane");
-    retrievalService.retrieve(stored.lockerId, stored.pickupCode);
+    retrievalService.confirmRetrieve(stored.lockerId, stored.pickupCode);
     expect(locker.isAvailable()).toBe(true);
   });
 
   it("removes the assignment after retrieval", async () => {
     lockerRepo.save(new Locker("L1", LockerSize.MEDIUM));
     const stored = await storageService.store(LockerSize.SMALL, "Jane");
-    retrievalService.retrieve(stored.lockerId, stored.pickupCode);
+    retrievalService.confirmRetrieve(stored.lockerId, stored.pickupCode);
     expect(assignmentRepo.findByLockerId(stored.lockerId)).toBeUndefined();
   });
 
@@ -63,5 +63,34 @@ describe("PackageRetrievalService", () => {
     expect(() => retrievalService.retrieve(stored.lockerId, "WRONG1")).toThrow(
       "Invalid pickup code",
     );
+  });
+
+  it("returns a storage charge of at least $1.00 on retrieval", async () => {
+    lockerRepo.save(new Locker("L1", LockerSize.MEDIUM));
+    const stored = await storageService.store(LockerSize.SMALL, "Jane");
+    const result = retrievalService.retrieve(
+      stored.lockerId,
+      stored.pickupCode,
+    );
+    expect(result.storageCharge).toBeGreaterThanOrEqual(1.0);
+  });
+
+  it("calculates charge based on storedAt timestamp", async () => {
+    lockerRepo.save(new Locker("L1", LockerSize.MEDIUM));
+    const { LockerAssignment } =
+      await import("../../src/domain/LockerAssignment");
+    const { PickupCode } = await import("../../src/domain/PickupCode");
+    const locker = lockerRepo.findById("L1")!;
+    locker.occupy();
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    const assignment = new LockerAssignment(
+      "L1",
+      "PKG-TEST",
+      new PickupCode("FIXED1"),
+      threeDaysAgo,
+    );
+    assignmentRepo.save(assignment);
+    const result = retrievalService.retrieve("L1", "FIXED1");
+    expect(result.storageCharge).toBe(3.0);
   });
 });
