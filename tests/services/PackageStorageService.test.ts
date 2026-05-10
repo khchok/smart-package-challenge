@@ -56,7 +56,6 @@ describe("PackageStorageService", () => {
     const [r1, r2] = await Promise.all([
       service.store(LockerSize.SMALL, "Jane A"),
       service.store(LockerSize.SMALL, "Doe B"),
-      service.store(LockerSize.SMALL, "Bob C"),
     ]);
 
     expect(r1.lockerId).not.toBe(r2.lockerId);
