@@ -1,6 +1,7 @@
-import { select } from "@inquirer/prompts";
+import { input, select } from "@inquirer/prompts";
 import { AssignmentRepository } from "../../repositories/AssignmentRepository";
 import { LockerRepository } from "../../repositories/LockerRepository";
+import { PackageRetrievalService } from "../../services/PackageRetrievalService";
 
 export async function customerMenu(
   lockerRepo: LockerRepository,
@@ -17,7 +18,24 @@ export async function customerMenu(
     if (action === "Back") return;
 
     if (action === "Retrieve my package") {
-      console.log("\nComing in Level 2...");
+      const service = new PackageRetrievalService(lockerRepo, assignmentRepo);
+      const lockerId = await input({
+        message: "Please enter locker Id:",
+        required: true,
+      });
+      const pickupCode = await input({
+        message: "Please enter your pickup code associated with the locker:",
+        required: true,
+      });
+
+      try {
+        const result = service.retrieve(lockerId, pickupCode);
+        console.log(
+          `Package ${result.packageId} retrieved | Storage charge: $${result.storageCharge.toFixed(2)}`,
+        );
+      } catch (err) {
+        console.error((err as Error).message);
+      }
     }
   }
 }
