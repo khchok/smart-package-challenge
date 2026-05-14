@@ -1,20 +1,18 @@
 import { select } from "@inquirer/prompts";
-import { seedLockers } from "../infra/seed";
-import { AssignmentRepository } from "../repositories/AssignmentRepository";
-import { LockerRepository } from "../repositories/LockerRepository";
+import { CompositionRoot } from "../infra/CompositionRoot";
 import { adminMenu } from "./menus/adminMenu";
 import { customerMenu } from "./menus/customerMenu";
 import { deliveryAgentMenu } from "./menus/deliveryAgentMenu";
-
-const lockerRepo = new LockerRepository();
-const assignmentRepo = new AssignmentRepository();
-
-seedLockers(lockerRepo);
 
 async function main(): Promise<void> {
   console.log("\n╔══════════════════════════════════════╗");
   console.log("║     Smart Package Locker System      ║");
   console.log("╚══════════════════════════════════════╝");
+  const {
+    lockerFinderService,
+    packageStorageService,
+    packageRetrievalService,
+  } = await CompositionRoot.setup();
 
   try {
     while (true) {
@@ -28,10 +26,10 @@ async function main(): Promise<void> {
         process.exit(0);
       }
 
-      if (role === "Admin") await adminMenu(lockerRepo);
+      if (role === "Admin") await adminMenu(lockerFinderService);
       if (role === "Delivery Agent")
-        await deliveryAgentMenu(lockerRepo, assignmentRepo);
-      if (role === "Customer") await customerMenu(lockerRepo, assignmentRepo);
+        await deliveryAgentMenu(lockerFinderService, packageStorageService);
+      if (role === "Customer") await customerMenu(packageRetrievalService);
     }
   } catch (error) {
     if (error instanceof Error && error.name === "ExitPromptError") {
