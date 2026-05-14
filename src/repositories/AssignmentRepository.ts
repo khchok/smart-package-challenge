@@ -1,6 +1,7 @@
 import { LockerAssignment } from "../domain/LockerAssignment";
+import { IAssignmentRepository } from "../services/interfaces/IAssignmentRepository";
 
-export class AssignmentRepository {
+export class AssignmentRepository implements IAssignmentRepository {
   private assignments = new Map<string, LockerAssignment>();
 
   save(assignment: LockerAssignment): void {

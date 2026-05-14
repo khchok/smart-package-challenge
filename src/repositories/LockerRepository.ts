@@ -1,7 +1,8 @@
 import { Locker } from "../domain/Locker";
 import { LockerSize } from "../domain/types";
+import { ILockerRepository } from "../services/interfaces/ILockerRepository";
 
-export class LockerRepository {
+export class LockerRepository implements ILockerRepository {
   private lockers = new Map<string, Locker>();
 
   save(locker: Locker): void {

@@ -1,15 +1,12 @@
 import { input, select } from "@inquirer/prompts";
 import { LockerSize } from "../../domain/types";
-import { AssignmentRepository } from "../../repositories/AssignmentRepository";
-import { LockerRepository } from "../../repositories/LockerRepository";
+import { LockerFinderService } from "../../services/LockerFinderService";
 import { PackageStorageService } from "../../services/PackageStorageService";
 
 export async function deliveryAgentMenu(
-  lockerRepo: LockerRepository,
-  assignmentRepo: AssignmentRepository,
+  lockerfinder: LockerFinderService,
+  storageService: PackageStorageService,
 ): Promise<void> {
-  const storageService = new PackageStorageService(lockerRepo, assignmentRepo);
-
   while (true) {
     console.log("\n─── Delivery Agent ──────────────────────");
 
@@ -21,7 +18,7 @@ export async function deliveryAgentMenu(
     if (action === "Back") return;
 
     if (action === "View available lockers") {
-      const available = lockerRepo.findAll().filter((l) => l.isAvailable());
+      const available = lockerfinder.findAll().filter((l) => l.isAvailable());
       if (available.length === 0) {
         console.log("\nNo lockers available.");
       } else {

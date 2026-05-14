@@ -2,15 +2,15 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { Locker } from "../../src/domain/Locker";
 import { LockerSize } from "../../src/domain/types";
 import { LockerRepository } from "../../src/repositories/LockerRepository";
-import { LockerFinder } from "../../src/services/LockerFinder";
+import { LockerFinderService } from "../../src/services/LockerFinderService";
 
 describe("", () => {
   let repo: LockerRepository;
-  let finder: LockerFinder;
+  let finder: LockerFinderService;
 
   beforeEach(() => {
     repo = new LockerRepository();
-    finder = new LockerFinder(repo);
+    finder = new LockerFinderService(repo);
   });
 
   it("returns null when no locker exist", () => {

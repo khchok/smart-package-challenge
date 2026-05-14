@@ -3,19 +3,29 @@ import { Locker } from "../../src/domain/Locker";
 import { LockerSize } from "../../src/domain/types";
 import { AssignmentRepository } from "../../src/repositories/AssignmentRepository";
 import { LockerRepository } from "../../src/repositories/LockerRepository";
+import { LockerFinderService } from "../../src/services/LockerFinderService";
 import { PackageRetrievalService } from "../../src/services/PackageRetrievalService";
 import { PackageStorageService } from "../../src/services/PackageStorageService";
+import { PickupCodeGenerator } from "../../src/services/PickupCodeGenerator";
 
 describe("PackageRetrievalService", () => {
   let lockerRepo: LockerRepository;
   let assignmentRepo: AssignmentRepository;
   let storageService: PackageStorageService;
   let retrievalService: PackageRetrievalService;
+  let lockerFinderService: LockerFinderService;
+  let pickupCodeGenerator: PickupCodeGenerator;
 
   beforeEach(() => {
     lockerRepo = new LockerRepository();
     assignmentRepo = new AssignmentRepository();
-    storageService = new PackageStorageService(lockerRepo, assignmentRepo);
+    lockerFinderService = new LockerFinderService(lockerRepo);
+    pickupCodeGenerator = new PickupCodeGenerator(assignmentRepo);
+    storageService = new PackageStorageService(
+      lockerFinderService,
+      assignmentRepo,
+      pickupCodeGenerator,
+    );
     retrievalService = new PackageRetrievalService(lockerRepo, assignmentRepo);
   });
 

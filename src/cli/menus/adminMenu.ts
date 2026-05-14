@@ -1,7 +1,9 @@
 import { select } from "@inquirer/prompts";
-import { LockerRepository } from "../../repositories/LockerRepository";
+import { LockerFinderService } from "../../services/LockerFinderService";
 
-export async function adminMenu(lockerRepo: LockerRepository): Promise<void> {
+export async function adminMenu(
+  lockerFinder: LockerFinderService,
+): Promise<void> {
   while (true) {
     console.log("\n─── Admin ───────────────────────────────");
 
@@ -13,7 +15,7 @@ export async function adminMenu(lockerRepo: LockerRepository): Promise<void> {
     if (action === "Back") return;
 
     if (action === "View all lockers") {
-      const lockers = lockerRepo.findAll();
+      const lockers = lockerFinder.findAll();
       console.log("\nID\t SIZE\t\t STATUS");
       console.log("──\t ────\t\t ──────");
       lockers.forEach((l) =>

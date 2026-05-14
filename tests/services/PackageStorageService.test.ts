@@ -3,17 +3,27 @@ import { Locker } from "../../src/domain/Locker";
 import { LockerSize } from "../../src/domain/types";
 import { AssignmentRepository } from "../../src/repositories/AssignmentRepository";
 import { LockerRepository } from "../../src/repositories/LockerRepository";
+import { LockerFinderService } from "../../src/services/LockerFinderService";
 import { PackageStorageService } from "../../src/services/PackageStorageService";
+import { PickupCodeGenerator } from "../../src/services/PickupCodeGenerator";
 
 describe("PackageStorageService", () => {
   let lockerRepo: LockerRepository;
   let assignmentRepo: AssignmentRepository;
   let service: PackageStorageService;
+  let lockerFinderService: LockerFinderService;
+  let pickupCodeGenerator: PickupCodeGenerator;
 
   beforeEach(() => {
     lockerRepo = new LockerRepository();
     assignmentRepo = new AssignmentRepository();
-    service = new PackageStorageService(lockerRepo, assignmentRepo);
+    lockerFinderService = new LockerFinderService(lockerRepo);
+    pickupCodeGenerator = new PickupCodeGenerator(assignmentRepo);
+    service = new PackageStorageService(
+      lockerFinderService,
+      assignmentRepo,
+      pickupCodeGenerator,
+    );
   });
 
   it("stores a package and returns locker ID and a 6-char pickup code", async () => {

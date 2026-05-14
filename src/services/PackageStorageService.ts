@@ -3,10 +3,9 @@ import { randomUUID } from "crypto";
 import { LockerAssignment } from "../domain/LockerAssignment";
 import { Package } from "../domain/Package";
 import { LockerSize } from "../domain/types";
-import { AssignmentRepository } from "../repositories/AssignmentRepository";
-import { LockerRepository } from "../repositories/LockerRepository";
-import { LockerFinder } from "./LockerFinder";
+import { LockerFinderService } from "./LockerFinderService";
 import { PickupCodeGenerator } from "./PickupCodeGenerator";
+import { IAssignmentRepository } from "./interfaces/IAssignmentRepository";
 
 export interface StoreResult {
   lockerId: string;
@@ -14,20 +13,19 @@ export interface StoreResult {
 }
 
 export class PackageStorageService {
-  private readonly lockerFinder: LockerFinder;
+  private readonly lockerFinder: LockerFinderService;
   private readonly codeGenerator: PickupCodeGenerator;
-  private readonly lockerRepo: LockerRepository;
-  private readonly assignmentRepo: AssignmentRepository;
+  private readonly assignmentRepo: IAssignmentRepository;
   private readonly mutex = new Mutex();
 
   constructor(
-    lockerRepo: LockerRepository,
-    assignmentRepo: AssignmentRepository,
+    lockerFinderService: LockerFinderService,
+    assignmentRepo: IAssignmentRepository,
+    codeGenerator: PickupCodeGenerator,
   ) {
-    this.lockerRepo = lockerRepo;
+    this.lockerFinder = lockerFinderService;
+    this.codeGenerator = codeGenerator;
     this.assignmentRepo = assignmentRepo;
-    this.lockerFinder = new LockerFinder(lockerRepo);
-    this.codeGenerator = new PickupCodeGenerator(assignmentRepo);
   }
 
   async store(size: LockerSize, ownerName: string): Promise<StoreResult> {

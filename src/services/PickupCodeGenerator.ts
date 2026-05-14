@@ -1,8 +1,8 @@
 import { PickupCode } from "../domain/PickupCode";
-import { AssignmentRepository } from "../repositories/AssignmentRepository";
+import { IAssignmentRepository } from "./interfaces/IAssignmentRepository";
 
 export class PickupCodeGenerator {
-  constructor(private readonly assignmentRepo: AssignmentRepository) {}
+  constructor(private readonly assignmentRepo: IAssignmentRepository) {}
 
   generate(): PickupCode {
     let code: string;

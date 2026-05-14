@@ -1,5 +1,5 @@
-import { AssignmentRepository } from "../repositories/AssignmentRepository";
-import { LockerRepository } from "../repositories/LockerRepository";
+import { IAssignmentRepository } from "./interfaces/IAssignmentRepository";
+import { ILockerRepository } from "./interfaces/ILockerRepository";
 import { StorageChargeCalculator } from "./StorageChargeCalculator";
 
 export interface RetrievalResult {
@@ -11,8 +11,8 @@ export class PackageRetrievalService {
   private readonly calculator = new StorageChargeCalculator();
 
   constructor(
-    private readonly lockerRepo: LockerRepository,
-    private readonly assignmentRepo: AssignmentRepository,
+    private readonly lockerRepo: ILockerRepository,
+    private readonly assignmentRepo: IAssignmentRepository,
   ) {}
 
   private getLockerAssignment(lockerId: string, pickupCode: string) {

@@ -1,11 +1,8 @@
 import { confirm, input, select } from "@inquirer/prompts";
-import { AssignmentRepository } from "../../repositories/AssignmentRepository";
-import { LockerRepository } from "../../repositories/LockerRepository";
 import { PackageRetrievalService } from "../../services/PackageRetrievalService";
 
 export async function customerMenu(
-  lockerRepo: LockerRepository,
-  assignmentRepo: AssignmentRepository,
+  retrievalService: PackageRetrievalService,
 ): Promise<void> {
   while (true) {
     console.log("\n─── Customer ────────────────────────────");
@@ -18,7 +15,6 @@ export async function customerMenu(
     if (action === "Back") return;
 
     if (action === "Retrieve my package") {
-      const service = new PackageRetrievalService(lockerRepo, assignmentRepo);
       const lockerId = await input({
         message: "Please enter locker Id:",
         required: true,
@@ -29,7 +25,7 @@ export async function customerMenu(
       });
 
       try {
-        const result = service.retrieve(lockerId, pickupCode);
+        const result = retrievalService.retrieve(lockerId, pickupCode);
         console.log(
           `Package ${result.packageId} | Storage charge: $${result.storageCharge.toFixed(2)}`,
         );
@@ -37,7 +33,7 @@ export async function customerMenu(
           message: `Confirm retrieve package with charges $${result.storageCharge.toFixed(2)}?`,
         });
         if (confirmation) {
-          service.confirmRetrieve(lockerId, pickupCode);
+          retrievalService.confirmRetrieve(lockerId, pickupCode);
           console.log(
             `Package ${result.packageId} retrieved | Storage charge: $${result.storageCharge.toFixed(2)}`,
           );
