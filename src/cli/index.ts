@@ -8,13 +8,14 @@ async function main(): Promise<void> {
   console.log("\n╔══════════════════════════════════════╗");
   console.log("║     Smart Package Locker System      ║");
   console.log("╚══════════════════════════════════════╝");
-  const {
-    lockerFinderService,
-    packageStorageService,
-    packageRetrievalService,
-  } = await CompositionRoot.setup();
 
   try {
+    const {
+      lockerFinderService,
+      packageStorageService,
+      packageRetrievalService,
+    } = await CompositionRoot.setup();
+
     while (true) {
       const role = await select({
         message: "Select your role:",
